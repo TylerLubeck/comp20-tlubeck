@@ -5,15 +5,25 @@
 <head>
     <title>Fecesbook</title>
     <script type="text/javascript">
-        function change(){
+        function update(){
             newMsg = document.getElementById("msg").value;
-            newDate = Date.now();
+            newDate = new Date();
             printMsg = (newDate.getMonth() + 1) + 
                 "/" + (newDate.getDate()) + "/" + (newDate.getFullYear());
             printMsg += " " + (newDate.getHours()) 
-                            + ":" + (newDate.getHours);
+                            + ":" + (newDate.getHours());
             printMsg += " - " + newMsg;
-
+            oldMsg = document.getElementById("status");
+            /*If there is not a : in the element, then I have not yet
+              placed a message (there will always be a : in the time).
+              If I haven't placed a message, don't print the extra line
+              breaks that are being used for formatting*/
+            if(oldMsg.innerHTML.indexOf(":") == -1 ){
+                placeMsg = printMsg;
+            } else {
+                placeMsg = printMsg + "<br /> <br />" + oldMsg.innerHTML;
+            }
+            oldMsg.innerHTML = placeMsg; 
         }
 
     </script>
