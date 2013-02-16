@@ -4,11 +4,17 @@ function start_game() {
     gameCanvas = document.getElementById("game");
     ctx = gameCanvas.getContext("2d");
     sprites = "assets/frogger_sprites.png";
+    highScore = 9001;
+    score = 0;
+    level = 1;
+    color = "rgb(0, 255, 0)";
     init();
 }
 
 function init() {
     img = new Image();
+
+    //packets of info for locations of each element
     //x, y, width, height
     frog = new Array(10, 365, 25, 25);
     livesFrog = new Array(10, 335, 25, 25);
@@ -26,34 +32,60 @@ function init() {
 }
 
 function start() {
+    //These won't need to be redrawn each time
     drawWater();
     drawRoads();
+    drawHeader();
+    drawText();
+
+    //These will be. Perhaps second function to seperate them?
     drawFrog(50, 478);
     drawLog(20, 240);
     drawCarOne(300, 375);
     drawCarTwo(120, 325);
-    drawHeader();
     drawLives(3);
+    drawLevels(10);
+    drawScore(score);
+    drawHighScore(highScore);
 }
 
 function drawLives(num) {
+    //draw images for whatever number of lives. Lets you add a new life
     for(i = 0; i < num; i++) {
         ctx.drawImage(img, livesFrog[0], livesFrog[1], 
                         livesFrog[2], livesFrog[3],
-                        (i*15), 505, 15, 15);
+                        (i*20), 505, 20, 20);
     }
 }
 
-function drawLevels(num) {
+function drawText() {
+    ctx.fillStyle = color;
+    ctx.font = "bold 20px sans-serif";
+    ctx.fillText("Level ", 80, 521);
+    ctx.font = "bold 20px sans-serif";
+    ctx.fillText("Score: ", 175, 550);
+    ctx.fillText("Highscore: ", 0, 550);
+}
 
+function drawLevels(num) {
+    ctx.fillStyle = color;
+    ctx.font = "bold 20px sans-serif";
+    ctx.fillText(num, 140, 521);
+    level = num;
 }
 
 function drawHighScore(num) {
-
+    ctx.fillStyle = color;
+    ctx.font = "bold 20px sans-serif";
+    ctx.fillText(num, 110, 550);
+    highScore = num;
 }
 
 function drawScore(num) {
-
+    ctx.fillStyle = color;
+    ctx.font = "bold 20px sans-serif";
+    ctx.fillText(num, 240, 550);
+    score = num;
 }
 
 function drawWater() {
