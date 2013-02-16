@@ -1,32 +1,37 @@
 
+//packets of info for locations of each element
+//x, y, width, height
+frog = new Array(10, 365, 25, 25);
+livesFrog = new Array(10, 335, 25, 25);
+log = new Array(0, 195, 130, 30); 
+carOne = new Array(70, 300, 30, 25);
+carTwo = new Array(100, 300, 55, 35);
+head = new Array(0, 0, 399, 115);
+road = new Array(0, 120, 399, 30);
+
+//Variables for various aspects of the game
+highScore = 9001;
+score = 0;
+level = 1;
+lives = 3;
+
+//Single point of truth for styling
+color = "rgb(0, 255, 0)";
+sprites = "assets/frogger_sprites.png";
+font = "bold 20px sans-serif";
 
 function start_game() {
     gameCanvas = document.getElementById("game");
     ctx = gameCanvas.getContext("2d");
-    sprites = "assets/frogger_sprites.png";
-    highScore = 9001;
-    score = 0;
-    level = 1;
-    color = "rgb(0, 255, 0)";
     init();
 }
 
 function init() {
     img = new Image();
 
-    //packets of info for locations of each element
-    //x, y, width, height
-    frog = new Array(10, 365, 25, 25);
-    livesFrog = new Array(10, 335, 25, 25);
-    log = new Array(0, 195, 130, 30); 
-    carOne = new Array(70, 300, 30, 25);
-    carTwo = new Array(100, 300, 55, 35);
-    head = new Array(0, 0, 399, 115);
-    road = new Array(0, 120, 399, 30);
     img.onload = start();
     img.src = sprites;
 
-    lives = 3;
 
     start();
 }
@@ -60,30 +65,35 @@ function drawLives(num) {
 
 function drawText() {
     ctx.fillStyle = color;
-    ctx.font = "bold 20px sans-serif";
+    
+    //reset font each time, in case it changes
+    ctx.font = font;
     ctx.fillText("Level ", 80, 521);
-    ctx.font = "bold 20px sans-serif";
     ctx.fillText("Score: ", 175, 550);
     ctx.fillText("Highscore: ", 0, 550);
 }
 
 function drawLevels(num) {
     ctx.fillStyle = color;
-    ctx.font = "bold 20px sans-serif";
+
+    //reset font each time, in case it changes
+    ctx.font = font;
     ctx.fillText(num, 140, 521);
     level = num;
 }
 
 function drawHighScore(num) {
     ctx.fillStyle = color;
-    ctx.font = "bold 20px sans-serif";
+    
+    //reset font each time, in case it changes
+    ctx.font = font;
     ctx.fillText(num, 110, 550);
     highScore = num;
 }
 
 function drawScore(num) {
     ctx.fillStyle = color;
-    ctx.font = "bold 20px sans-serif";
+    ctx.font = font;
     ctx.fillText(num, 240, 550);
     score = num;
 }
@@ -130,6 +140,3 @@ function drawCarTwo(x, y) {
                         x, y, carTwo[2], carTwo[3]);   
 }
 
-function killTheFrog(position) {
-    
-}
