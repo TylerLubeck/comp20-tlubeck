@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <link rel="stylesheet" href="jobs.css"/>
+        <title>Friends of Ming Chow Jobs Listing</title>
+        <script>
+            function parse() {
+                url = "http://messagehub.herokuapp.com/lab8.json";
+                try {
+                    request = new XMLHttpRequest();
+                }
+                catch (ms1) {
+                    try {
+                        request = new ActiveXObject("Msxml2.XMLHTTP");
+                    }
+                    catch (ms2) {
+                        try {
+                            request = new ActiveXObject("Microsoft.XMLHTP");
+                        }
+                        catch (ex) {
+                            request = null;
+                        }
+                    }
+                }
+                
+                request.onreadystatechange = isReady;
+                function isReady() {
+                    if(request.readyState < 4 || request.status !== 200)
+                    {
+                        return;
+                    }
+                    if(request.readyState === 4)
+                    {
+                       doData(request); 
+                    }
+                }
+                request.open('GET', url, true);
+                request.send('');
+            }
+
+            function doData(request)
+            { 
+            
+                list = document.getElementById("list");
+                if (request != null) {
+                    
+                    data = request.responseText;
+
+                    element = window.document.createElement("div");
+                    outerElement = window.document.createElement("div");
+                    outerElement.className = "outerJobs";
+                    element.className = "jobs";
+                    myStr = "Company: " + data[i]["company"] + "<br />";
+                    myStr += "Position: " + data[i]["position"] + "<br />";
+                    myStr += "Location: " + data[i]["location"] + "<br />";
+                    element.innerHTML = myStr;
+                    outerElement.appendChild(element);
+                    list.appendChild(outerElement);
+                } else {
+                    list.innerHTML = "Sorry, something went wrong";
+                }
+
+            }
+        </script>
+    </head>
+
+    <body onload="parse()">
+        <div id="list"></div>
+    </body>
+
+</html>
