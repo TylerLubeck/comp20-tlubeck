@@ -1,17 +1,77 @@
 redline = "http://mbtamap-cedar.herokuapp.com/mapper/redline.json";
 locations = "http://messagehub.herokuapp.com/a3.json";
 
-
+var redlineJson;
+var locationJson;
+var carmen = new Object();
+var waldo = new Object();
 var myLat;
 var myLon;
 var map;
+var me;
 var redMain = [];
 var redAsh = [];
 var redBrain = [];
 var markers = [];
 var icon = "assets/t_icon.png";
-
+var waldoIcon = "assets/waldo.png";
+var carmenIcon = "assets/carmen.png";
 var DEBUG = true;
+
+function doAJAX()
+{
+    try {
+        redRequest = new XMLHttpRequest();
+        locRequest = new XMLHttpRequest();
+    }
+    catch (ms1) {
+        try {
+            redRequest = new ActiveXObject("Msxml2.XMLHTTP");
+            locRequest = new ActiveXObject("Msxml2.XMLHTTP");
+        }
+        catch (ms2) {
+            try {
+                redRequest = new ActiveXObject("Microsoft.XMLHTP");
+                locRequest = new ActiveXObject("Microsoft.XMLHTP");
+            }
+            catch (ex) {
+                redRequest = null;
+                locRequest = null;
+            }
+        }
+    }
+
+    redRequest.onreadystatechange = isReadyRed;
+    locRequest.onreadystatechange = isReadyLoc;
+    function isReadyRed() {
+        //Checking the status code throws errors?
+        if(redRequest.readystate < 4)
+        {
+            return;
+        }
+        if (redRequest.readyState === 4)
+        {
+            redlineJson = redRequest.responseText; 
+        }
+    }
+    
+    function isReadyLoc() {
+        if(locRequest.readystate < 4)
+        {
+            return;
+        }
+        if (locRequest.readyState === 4)
+        {
+            locationJson = locRequest.responseText; 
+            makePeople();
+        }
+    }
+    redRequest.open('GET', redline, true);
+    redRequest.send('');
+        
+    locRequest.open('GET', locations, true);
+    locRequest.send('');
+}
 
 function getLoc()
 {
@@ -20,12 +80,9 @@ function getLoc()
             myLat = position.coords.latitude;
             myLon = position.coords.longitude;
         });
-
-        if(DEBUG) {
-            myLat = 42.35;
-            myLon = -71.06;
-        }
-
+        pt = new google.maps.LatLng(myLat, myLon);
+        me = new google.maps.Marker({position: pt, title:"You are here"});
+        me.setMap(map);
     } else {
         throw "Geolocation is not enabled";
     }
@@ -118,11 +175,39 @@ function getRedPointers()
 
 }
 
+function makePeople() {
+    if (locationJson != null) {
+        json = JSON.parse(locationJson);
+        for (i in json) {
+            people = json[i];
+            if(people.name == "Carmen Sandiego") {
+                carmen.name = people.name;
+                carmen.lat = people.loc.latitude;
+                carmen.lon = people.loc.longitude;
+                carmen.note = people.loc.note;
+                pt = new google.maps.LatLng(carmen.lat, carmen.lon);
+                carmen.marker = new google.maps.Marker({position: pt,
+                    title:carmen.name, icon: carmenIcon});
+                carmen.marker.setMap(map);
+            } else if (people.name == "Waldo") {
+                waldo.name = people.name;
+                waldo.lat = people.loc.latitude;
+                waldo.lon = people.loc.longitude;
+                waldo.note = people.loc.note;
+                pt = new google.maps.LatLng(waldo.lat, waldo.lon);
+                waldo.marker = new google.maps.Marker({position: pt,
+                    title:waldo.name, icon:waldoIcon});
+                waldo.marker.setMap(map);
+            }               
+        }
+    }
+}
+
 function renderLine()
 {
     getRedPointers();
 
-    for (var m in markers) {
+    for (m=0; m < markers.length; m++) {
         markers[m].setMap(map);
         google.maps.event.addListener(markers[m], 'click', function() {
             alert("boo!");
@@ -157,10 +242,11 @@ function renderLine()
 function init() 
 {
     try {
-        getLoc();
-    
-        
+        doAJAX();
+        myLat = 42.35;
+        myLon = -71.06;
         center = new google.maps.LatLng(myLat, myLon);
+
         mapOptions = {
             center: center,
             zoom: 12,
@@ -170,7 +256,13 @@ function init()
         map = new google.maps.Map(document.getElementById("map"), 
                                         mapOptions);
         renderLine();
+        makePeople();  
+         
+        getLoc();
+        map.setCenter(new google.maps.LatLng(myLat, myLon));
+        
     } catch (err) {
-        document.getElementById("map").innerHTML = err;
+        document.getElementById("map").innerHTML =
+            "Sorry, there has been a problem";
     }
 }
