@@ -93,7 +93,6 @@ function getLoc()
                 content: text
             });
             infowindow.open(map, meMarker);
-        
             google.maps.event.addListener(meMarker, 'click', function() {
                 infowindow.open(map, meMarker);
             });
@@ -118,7 +117,6 @@ function makePeople() {
                 carmen.marker = new google.maps.Marker({position: pt,
                     title:carmen.name, icon: carmenIcon});
                 carmen.marker.setMap(map);
-                console.log("made carmen");
             } else if (people.name == "Waldo") {
                 waldo = new Object();
                 waldo.name = people.name;
@@ -230,11 +228,8 @@ function findPlaces()
     }
 
     shortestT = metersToMiles(shortestT);
-    text = 'Distance to ' + closestT + ' is ' + shortestT + '<br />';
-    console.log(waldo);
-    console.log(carmen);
+    text = 'Distance to ' + closestT + ' is ' + shortestT + ' miles<br />';
     if(waldo != null) { 
-        console.log("blaaaaagh");
         distToWaldo = google.maps.geometry.spherical.
             computeDistanceBetween(me, waldo.marker.getPosition());
         distToWaldo = metersToMiles(distToWaldo);
