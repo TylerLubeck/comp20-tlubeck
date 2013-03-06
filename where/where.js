@@ -3,12 +3,13 @@ locations = "http://messagehub.herokuapp.com/a3.json";
 
 var redlineJson;
 var locationJson;
-var carmen = new Object();
-var waldo = new Object();
+var carmen = null;
+var waldo = null;
 var myLat;
 var myLon;
 var map;
 var me;
+var meMarker;
 var redMain = [];
 var redAsh = [];
 var redBrain = [];
@@ -16,7 +17,6 @@ var markers = [];
 var icon = "assets/t_icon.png";
 var waldoIcon = "assets/waldo.png";
 var carmenIcon = "assets/carmen.png";
-var DEBUG = true;
 
 function doAJAX()
 {
@@ -78,101 +78,29 @@ function getLoc()
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
             myLat = position.coords.latitude;
+           
+             
             myLon = position.coords.longitude;
+            pt = new google.maps.LatLng(myLat, myLon);
+            me = 
+                new google.maps.Marker({position: pt, title:"You are here"});
+            me.setMap(map);
+            meMarker = me;
+        
+            map.setCenter(new google.maps.LatLng(myLat, myLon));
+            text = findPlaces(); 
+            infowindow = new google.maps.InfoWindow({
+                content: text
+            });
+            infowindow.open(map, meMarker);
+        
+            google.maps.event.addListener(meMarker, 'click', function() {
+                infowindow.open(map, meMarker);
+            });
         });
-        pt = new google.maps.LatLng(myLat, myLon);
-        me = new google.maps.Marker({position: pt, title:"You are here"});
-        me.setMap(map);
     } else {
         throw "Geolocation is not enabled";
     }
-}
-
-function getRedPointers()
-{
-    pt = new google.maps.LatLng(42.39428, -71.142483);
-    markers.push(new google.maps.Marker({position: pt, title:"Alewife Station", icon:icon}));
-    redMain.push(pt);
-
-    pt = new google.maps.LatLng(42.39674, -71.121815);
-    markers.push(new google.maps.Marker({position: pt, title:"Davis Station", icon:icon}));
-    redMain.push(pt);
-    
-    pt = new google.maps.LatLng(42.3884, -71.119149);
-    markers.push(new google.maps.Marker({position: pt, title:"Porter Square Station", icon:icon}));
-    redMain.push(pt);
-    
-    pt = new google.maps.LatLng(42.373362, -71.118956);
-    markers.push(new google.maps.Marker({position: pt, title:"Harvard Square Station", icon:icon}));
-    redMain.push(pt);
-    
-    pt = new google.maps.LatLng(42.365486, -71.103802);
-    markers.push(new google.maps.Marker({position: pt, title:"Central Square Station", icon:icon}));
-    redMain.push(pt);
-    
-    pt = new google.maps.LatLng(42.361166, -71.070628);
-    markers.push(new google.maps.Marker({position: pt, title:"Charles/MGH Station", icon:icon}));
-    redMain.push(pt);
-    
-    pt = new google.maps.LatLng(42.35639457, -71.0624242);
-    markers.push(new google.maps.Marker({position: pt, title:"Park St. Station", icon:icon}));
-    redMain.push(pt);
-    
-    pt = new google.maps.LatLng(42.355518, -71.055242);
-    markers.push(new google.maps.Marker({position: pt, title:"South Station", icon:icon}));
-    redMain.push(pt);
-    
-    pt = new google.maps.LatLng(42.342622, -71.056967);
-    markers.push(new google.maps.Marker({position: pt, title:"Broadway Station", icon:icon}));
-    redMain.push(pt);
-    
-    pt = new google.maps.LatLng(42.330154, -71.057655);
-    markers.push(new google.maps.Marker({position: pt, title:"Andrew Station", icon:icon}));
-    redMain.push(pt);
-    
-    pt = new google.maps.LatLng(42.320685, -71.052391);
-    markers.push(new google.maps.Marker({position: pt, title:"JFK/UMass Station", icon:icon}));
-    redMain.push(pt);
-    redAsh.push(pt);
-    redBrain.push(pt);
-
-    
-    pt = new google.maps.LatLng(42.31129, -71.053331);
-    markers.push(new google.maps.Marker({position: pt, title:"Savin Hill Station", icon:icon}));
-    redAsh.push(pt);
-    
-    pt = new google.maps.LatLng(42.275275, -71.029583);
-    markers.push(new google.maps.Marker({position: pt, title:"North Quincy Station", icon:icon}));
-    redBrain.push(pt);
-    
-    pt = new google.maps.LatLng(42.2665139, -71.0203369);
-    markers.push(new google.maps.Marker({position: pt, title:"Wollaston Station", icon:icon}));
-    redBrain.push(pt);
-    
-    pt = new google.maps.LatLng(42.300093, -71.061667);
-    markers.push(new google.maps.Marker({position: pt, title:"Fields Corner Station", icon:icon}));
-    redAsh.push(pt);
-    
-    pt = new google.maps.LatLng(42.251809, -71.005409);
-    markers.push(new google.maps.Marker({position: pt, title:"Quincy Center Station", icon:icon}));
-    redBrain.push(pt);
-    
-    pt = new google.maps.LatLng(42.29312583, -71.06573796);
-    markers.push(new google.maps.Marker({position: pt, title:"Shawmut Station", icon:icon}));
-    redAsh.push(pt);
-    
-    pt = new google.maps.LatLng(42.233391, -71.007153);
-    markers.push(new google.maps.Marker({position: pt, title:"Quincy Adams Station", icon:icon}));
-    redBrain.push(pt);
-    
-    pt = new google.maps.LatLng(42.284652, -71.064489);
-    markers.push(new google.maps.Marker({position: pt, title:"Ashmont Station", icon:icon}));
-    redAsh.push(pt);
-    
-    pt = new google.maps.LatLng(42.2078543, -71.0011385);
-    markers.push(new google.maps.Marker({position: pt, title:"Braintree Station", icon:icon}));
-    redBrain.push(pt);
-
 }
 
 function makePeople() {
@@ -181,6 +109,7 @@ function makePeople() {
         for (i in json) {
             people = json[i];
             if(people.name == "Carmen Sandiego") {
+                carmen = new Object();
                 carmen.name = people.name;
                 carmen.lat = people.loc.latitude;
                 carmen.lon = people.loc.longitude;
@@ -189,7 +118,9 @@ function makePeople() {
                 carmen.marker = new google.maps.Marker({position: pt,
                     title:carmen.name, icon: carmenIcon});
                 carmen.marker.setMap(map);
+                console.log("made carmen");
             } else if (people.name == "Waldo") {
+                waldo = new Object();
                 waldo.name = people.name;
                 waldo.lat = people.loc.latitude;
                 waldo.lon = people.loc.longitude;
@@ -203,6 +134,39 @@ function makePeople() {
     }
 }
 
+function makePopUp(stationTitle) 
+{
+    station = assArray[stationTitle];
+    stationNorth = station.key + 'N';
+    stationSouth = station.key + 'S';
+    results = JSON.parse(redlineJson);
+    text = '<h3>' + stationTitle + '</h3>';
+    text += '<table id="schedule"><tr><th>Trip #</th><th>Direction</th><th>Time Remaining</th></tr>';
+    
+    if(station.hasNorth)
+    {
+        for(item in results) {
+            if(results[item].PlatformKey == stationNorth && results[item].InformationType == 'Predicted') {
+                text += '<tr><td>' +results[item].Trip + '</td><td> North </td><td>';
+                text += results[item].TimeRemaining + '</td>';
+
+            }
+        }       
+    }
+    if(station.hasSouth)
+    {
+        for(item in results) {
+            if(results[item].PlatformKey == stationSouth) {
+                text += '<tr><td>' + results[item].Trip + '</td><td> South </td><td>';
+                text += results[item].TimeRemaining + '</td>'; 
+            }
+        }
+    }
+    text += '</table>';
+
+    return text;
+}
+
 function renderLine()
 {
     getRedPointers();
@@ -210,7 +174,12 @@ function renderLine()
     for (m=0; m < markers.length; m++) {
         markers[m].setMap(map);
         google.maps.event.addListener(markers[m], 'click', function() {
-            alert("boo!");
+            
+            text = makePopUp(this.title);
+            infowindow = new google.maps.InfoWindow({
+                content: text
+            });
+            infowindow.open(map, this);
         });
     }
 
@@ -239,9 +208,53 @@ function renderLine()
     lineBrain.setMap(map);
 }
 
+function metersToMiles(distance)
+{
+    return distance * 0.00062137119;
+}
+
+function findPlaces()
+{
+
+    me = new google.maps.LatLng(myLat, myLon);
+    shortestT = google.maps.geometry.spherical.
+        computeDistanceBetween(me, markers[0].getPosition());
+    closestT = markers[0].getTitle();
+    for(i = 1; i < markers.length; i++) {
+        test = google.maps.geometry.spherical.
+            computeDistanceBetween(me, markers[i].getPosition());
+        if(test < shortestT) {
+            shortestT = test;
+            closestT = markers[i].getTitle();
+        }
+    }
+
+    shortestT = metersToMiles(shortestT);
+    text = 'Distance to ' + closestT + ' is ' + shortestT + '<br />';
+    console.log(waldo);
+    console.log(carmen);
+    if(waldo != null) { 
+        console.log("blaaaaagh");
+        distToWaldo = google.maps.geometry.spherical.
+            computeDistanceBetween(me, waldo.marker.getPosition());
+        distToWaldo = metersToMiles(distToWaldo);
+        text += 'Waldo is ' + distToWaldo + ' miles away <br />';
+    }
+    if(carmen != null) {
+        distToCarm = google.maps.geometry.spherical.
+            computeDistanceBetween(me, carmen.marker.getPosition());   
+        distToCarm = metersToMiles(distToCarm);
+        text += 'Carmen is ' + distToCarm + ' miles away <br />';
+    }
+    
+    return text;
+}
+
+
 function init() 
 {
     try {
+        makeArray();
         doAJAX();
         myLat = 42.35;
         myLon = -71.06;
@@ -256,11 +269,8 @@ function init()
         map = new google.maps.Map(document.getElementById("map"), 
                                         mapOptions);
         renderLine();
-        makePeople();  
          
         getLoc();
-        map.setCenter(new google.maps.LatLng(myLat, myLon));
-        
     } catch (err) {
         document.getElementById("map").innerHTML =
             "Sorry, there has been a problem";
