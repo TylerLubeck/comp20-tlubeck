@@ -22,17 +22,6 @@
                 localStorage.message = printMsg + "<br /><br />" +
                     localStorage.message;
             }
-            /*If there is not a : in the element, then I have not yet
-              placed a message (there will always be a : in the time).
-              If I haven't placed a message, don't print the extra line
-              breaks that are being used for formatting*/
-            /*
-            if(oldMsg.innerHTML.indexOf(":") == -1 ){
-                placeMsg = printMsg;
-            } else {
-                placeMsg = printMsg + "<br /> <br />" + oldMsg.innerHTML;
-                }
-                */
             oldMsg.innerHTML = localStorage.message; 
         }
 
