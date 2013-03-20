@@ -13,7 +13,12 @@ road = new Array(0, 120, 399, 30);
 highScore = 9001;
 score = 0;
 level = 1;
-lives = 3;
+lives = 5;
+gameOver = false;
+
+//Moving things coordinate
+car1_x = 300;
+car1_y = 375;
 
 //Single point of truth for styling
 color = "rgb(0, 255, 0)";
@@ -24,7 +29,38 @@ function start_game() {
     gameCanvas = document.getElementById("game");
     ctx = gameCanvas.getContext("2d");
     init();
+    run = 0;
+    lane1 = setInterval(car1, 50);
+    //lane2 = setInterval(car2, 200);
+    //lane3 = setInterval(car3, 500);
+    //lane4 = setInterval(car4, 50);
+    //lane5 = setInterval(car5, 20);
+    tid = setInterval(play, 1000);
 }
+
+function car1() {
+    if(car1_x < -25) {
+        car1_x = 399;
+    }
+    car1_x--;
+    console.log('car1_x: ' + car1_x);
+    drawCarOne(car1_x, car1_y);
+}
+
+function play() {
+    run++;
+    console.log(run);
+        
+
+    if(lives == 0){
+            gameOver = true;
+    }
+    
+    if(gameOver) {
+        clearInterval(tid);
+    }
+}
+
 
 function init() {
     img = new Image();
@@ -48,7 +84,7 @@ function start() {
     drawLog(20, 240);
     drawCarOne(300, 375);
     drawCarTwo(120, 325);
-    drawLives(3);
+    drawLives(lives);
     drawLevels(10);
     drawScore(score);
     drawHighScore(highScore);
@@ -68,7 +104,7 @@ function drawText() {
     
     //reset font each time, in case it changes
     ctx.font = font;
-    ctx.fillText("Level ", 80, 521);
+    ctx.fillText("Level ", 100, 521);
     ctx.fillText("Score: ", 175, 550);
     ctx.fillText("Highscore: ", 0, 550);
 }
@@ -78,7 +114,7 @@ function drawLevels(num) {
 
     //reset font each time, in case it changes
     ctx.font = font;
-    ctx.fillText(num, 140, 521);
+    ctx.fillText(num, 160, 521);
     level = num;
 }
 
