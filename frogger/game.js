@@ -16,8 +16,8 @@ level = 1;
 lives = 5;
 gameOver = false;
 
-//Moving things coordinate
-car1_x = 300;
+//Moving things coordinates
+car1_x = -25;
 car1_y = 375;
 
 //Single point of truth for styling
@@ -30,7 +30,7 @@ function start_game() {
     ctx = gameCanvas.getContext("2d");
     init();
     run = 0;
-    lane1 = setInterval(car1, 50);
+    lane1 = setInterval(car1, 10);
     //lane2 = setInterval(car2, 200);
     //lane3 = setInterval(car3, 500);
     //lane4 = setInterval(car4, 50);
@@ -39,10 +39,14 @@ function start_game() {
 }
 
 function car1() {
-    if(car1_x < -25) {
-        car1_x = 399;
+    if(car1_x > 399) {
+        car1_x = -25;
     }
-    car1_x--;
+    
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 375, 399, 25); 
+    
+    car1_x++;
     console.log('car1_x: ' + car1_x);
     drawCarOne(car1_x, car1_y);
 }
@@ -82,7 +86,7 @@ function start() {
     //These will be. Perhaps second function to seperate them?
     drawFrog(50, 478);
     drawLog(20, 240);
-    drawCarOne(300, 375);
+    //drawCarOne(300, 375);
     drawCarTwo(120, 325);
     drawLives(lives);
     drawLevels(10);
