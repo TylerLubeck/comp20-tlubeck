@@ -19,24 +19,24 @@ score = 0;
 level = 1;
 lives = 5;
 time = 60;
-move_distance = 23;
+move_distance = 25;
 gameOver = false;
 
 //Moving things coordinates
-car1_x = -25;
-car1_y = 375;
+car1_x = -75;
+car1_y = 300;
 
 car2_x = -25;
-car2_y = 400;
+car2_y = 325;
 
 car3_x = 450;
-car3_y = 325;
+car3_y = 375;
 
 car4_x = -25;
-car4_y = 300;
+car4_y = 400;
 
 car5_x = -25;
-car5_y = 425;
+car5_y = 450;
 
 log1_Y = 110;
 log1_a = 0;
@@ -44,7 +44,7 @@ log1_b = 200;
 log1_c = -100;
 
 frog_x_start = 50;
-frog_y_start = 478;
+frog_y_start = 475;
 
 frog_x = frog_x_start;
 frog_y = frog_y_start;
@@ -56,17 +56,17 @@ font = "bold 20px sans-serif";
 document.onkeydown = function(key) {
        switch(key.keyCode) {
            case 37:
-               moveLeft();
-               break;
+                frog_x -= move_distance; 
+                break;
            case 38:
-               moveUp();
-               break;
+                frog_y -= move_distance;
+                break;
            case 39:
-               moveRight();
-               break;  
+                frog_x += move_distance;
+                break;  
            case 40:
-               moveDown();
-               break;
+                frog_y += move_distance;
+                break;
        } 
 }
 
@@ -74,6 +74,7 @@ function makeTimers() {
     run = 0;
     //redraw background every time
     backgroundID = setInterval(drawBackground, 1);
+    collissionCheckID = setInterval(collisionCheck, 1);
     lane1 = setInterval(car1, 15);
     lane2 = setInterval(car2, 13);
     lane3 = setInterval(car3, 10);
@@ -83,7 +84,6 @@ function makeTimers() {
     //log2 = setInterval(log2, 8);
     //log3 = setInterval(log3, 12);
     tid = setInterval(play, 1000);
-    play();
 }
 
 function start_game() {
@@ -94,33 +94,13 @@ function start_game() {
     img.src = sprites;
 }
 
-
-function moveLeft() {
-    frog_x -= move_distance; 
-    //drawFrog();
-}
-
-function moveUp() {
-    frog_y -= move_distance;
-    //drawFrog();
-}
-
-function moveRight() {
-    frog_x += move_distance;
-    //drawFrog();
-}
-
-function moveDown() {
-    frog_y += move_distance;
-    //drawFrog();
-}
-
 function play() {
     run++;
     time--;
     drawTime();
     console.log('in play');
-    
+   
+
     if(lives == 0){
         gameOver = true;
     }
@@ -246,13 +226,13 @@ function drawLog(x, y) {
 function drawCars() {
     //Tractor
     ctx.drawImage(img, carOne[0], carOne[1], carOne[2], carOne[3], 
+            car1_x, car1_y, carOne[2], carOne[3]);   
+    ctx.drawImage(img, carOne[0], carOne[1], carOne[2], carOne[3], 
             car1_x+40, car1_y, carOne[2], carOne[3]);   
     ctx.drawImage(img, carOne[0], carOne[1], carOne[2], carOne[3], 
-            car1_x+70, car1_y, carOne[2], carOne[3]);   
+            car1_x+80, car1_y, carOne[2], carOne[3]);   
     ctx.drawImage(img, carOne[0], carOne[1], carOne[2], carOne[3], 
-            car1_x+100, car1_y, carOne[2], carOne[3]);   
-    ctx.drawImage(img, carOne[0], carOne[1], carOne[2], carOne[3], 
-            car1_x+130, car1_y, carOne[2], carOne[3]);   
+            car1_x+120, car1_y, carOne[2], carOne[3]);   
     ctx.drawImage(img, carOne[0], carOne[1], carOne[2], carOne[3], 
             car1_x+160, car1_y, carOne[2], carOne[3]);   
     
@@ -268,33 +248,33 @@ function drawCars() {
     ctx.drawImage(img, carThree[0], carThree[1], carThree[2], carThree[3], 
             car3_x, car3_y, carThree[2], carThree[3]);   
     ctx.drawImage(img, carThree[0], carThree[1], carThree[2], carThree[3], 
-            car3_x+30, car3_y, carThree[2], carThree[3]);   
+            car3_x+40, car3_y, carThree[2], carThree[3]);   
     ctx.drawImage(img, carThree[0], carThree[1], carThree[2], carThree[3], 
-            car3_x+60, car3_y, carThree[2], carThree[3]);   
+            car3_x+80, car3_y, carThree[2], carThree[3]);   
     ctx.drawImage(img, carThree[0], carThree[1], carThree[2], carThree[3], 
-            car3_x+90, car3_y, carThree[2], carThree[3]);   
+            car3_x+120, car3_y, carThree[2], carThree[3]);   
 
     //Purple Car
+    ctx.drawImage(img, carFour[0], carFour[1], carFour[2], carFour[3], 
+            car4_x, car4_y, carFour[2], carFour[3]);   
     ctx.drawImage(img, carFour[0], carFour[1], carFour[2], carFour[3], 
             car4_x+40, car4_y, carFour[2], carFour[3]);   
     ctx.drawImage(img, carFour[0], carFour[1], carFour[2], carFour[3], 
             car4_x+80, car4_y, carFour[2], carFour[3]);   
     ctx.drawImage(img, carFour[0], carFour[1], carFour[2], carFour[3], 
             car4_x+120, car4_y, carFour[2], carFour[3]);   
-    ctx.drawImage(img, carFour[0], carFour[1], carFour[2], carFour[3], 
-            car4_x+160, car4_y, carFour[2], carFour[3]);   
     
     //WhiteSpeeder
     ctx.drawImage(img, carFive[0], carFive[1], carFive[2], carFive[3], 
             car5_x, car5_y, carFive[2], carFive[3]);   
     ctx.drawImage(img, carFive[0], carFive[1], carFive[2], carFive[3], 
-            car5_x+30, car5_y, carFive[2], carFive[3]);   
+            car5_x+40, car5_y, carFive[2], carFive[3]);   
     ctx.drawImage(img, carFive[0], carFive[1], carFive[2], carFive[3], 
-            car5_x+60, car5_y, carFive[2], carFive[3]);   
-    ctx.drawImage(img, carFive[0], carFive[1], carFive[2], carFive[3], 
-            car5_x+90, car5_y, carFive[2], carFive[3]);   
+            car5_x+80, car5_y, carFive[2], carFive[3]);   
     ctx.drawImage(img, carFive[0], carFive[1], carFive[2], carFive[3], 
             car5_x+120, car5_y, carFive[2], carFive[3]);   
+    ctx.drawImage(img, carFive[0], carFive[1], carFive[2], carFive[3], 
+            car5_x+160, car5_y, carFive[2], carFive[3]);   
 }
 
 //Truck
@@ -360,4 +340,42 @@ function log1() {
     log1_a++;
     log1_b++;
     log1_c++;
+}
+
+function collisionCheck() {
+    //Tractor
+    //if(frog_y >= car1_y && frog_y <= car1_y+24) {
+    if(frog_y === car1_y) {
+        if(frog_x >= car1_x && frog_x <= car1_x + 160) {
+            console.log('frog squashed by Tractor');
+        }
+    }
+    //Truck
+    //else if(frog_y >= car2_y && frog_y <= car2_y+34) {
+    else if(frog_y === car2_y) {
+        if(frog_x >= car2_x && frog_x <= car2_x + 120) {
+            console.log('frog squashed by Truck');
+        }
+    }
+    //Yellow Speeder
+    //else if(frog_y >= car3_y && frog_y <= car3_y+24) {
+    else if(frog_y === car3_y) {
+        if(frog_x >= car3_x && frog_x <= car3_x + 120) {
+            console.log('frog squashed by Yellow Speeder');
+        }
+    }
+    //Purple CAr
+    //else if(frog_y >= car4_y && frog_y <= car4_y+34) {
+    else if(frog_y === car4_y) {
+        if(frog_x >= car4_x && frog_x <= car4_x + 120) {
+            console.log('frog squashed by Purple Car');
+        }
+    }
+    //White Speeder
+    //else if(frog_y >= car5_y && frog_y <= car5_y+24) {
+    else if(frog_y === car5_y) {
+        if(frog_x >= car5_x && frog_x <= car5_x + 160) {
+            console.log('frog squashed by White SPeeder');
+        }
+    }
 }
