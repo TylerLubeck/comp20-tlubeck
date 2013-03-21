@@ -59,6 +59,7 @@ document.onkeydown = function(key) {
                 frog_x -= move_distance; 
                 break;
            case 38:
+                score += 10;
                 frog_y -= move_distance;
                 break;
            case 39:
@@ -127,7 +128,7 @@ function drawBackground() {
     drawWaterItems();
     drawLives();
     drawLevels(10);
-    drawScore(score);
+    drawScore();
     drawHighScore(highScore);
 
     drawFrog();
@@ -181,13 +182,10 @@ function drawTime() {
     ctx.fillText(time, 340, 550);
 }
 
-function drawScore(num) {
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(240, 530, 30, 20);
+function drawScore() {
     ctx.fillStyle = color;
     ctx.font = font;
-    ctx.fillText(num, 240, 550);
-    score = num;
+    ctx.fillText(score, 240, 550);
 }
 
 function drawWater() {
