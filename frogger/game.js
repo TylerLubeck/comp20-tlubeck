@@ -13,6 +13,7 @@ log1Arr = new Array(0, 195, 130, 30);
 head = new Array(0, 0, 399, 115);
 road = new Array(0, 120, 399, 30);
 
+
 //Variables for various aspects of the game
 highScore = 9001;
 score = 0;
@@ -20,7 +21,23 @@ level = 1;
 lives = 5;
 time = 60;
 move_distance = 25;
+move_distance_hor = 20;
 gameOver = false;
+dead = false;
+onLog1 = false;
+onLog2 = false;
+onLog3 = false;
+onLog4 = false;
+onLog5 = false;
+onLog6 = false;
+onLog7 = false;
+win1Draw = false;
+win2Draw = false;
+win3Draw = false;
+win4Draw = false;
+win5Draw = false;
+deadID = undefined;
+
 
 //Moving things coordinates
 car1_x = -75;
@@ -38,10 +55,40 @@ car4_y = 400;
 car5_x = -25;
 car5_y = 450;
 
-log1_Y = 110;
+log1_Y = 125;
 log1_a = 0;
 log1_b = 200;
 log1_c = -100;
+
+log2_Y = 250;
+log2_a = 0;
+log2_b = 200;
+log2_c = -100;
+
+log3_Y = 225;
+log3_a = 0;
+log3_b = 200;
+log3_c = -100;
+
+log4_Y = 150;
+log4_a = 0;
+log4_b = 180;
+log4_c = 360;
+
+log5_Y = 175;
+log5_a = -200;
+log5_b = -20;
+log5_c = 160;
+
+log6_Y = 200;
+log6_a = -25;
+log6_b = 155;
+log6_c = 235;
+
+log7_Y = 100;
+log7_a = -25;
+log7_b = 155;
+log7_c = 235;
 
 frog_x_start = 50;
 frog_y_start = 475;
@@ -49,24 +96,39 @@ frog_y_start = 475;
 frog_x = frog_x_start;
 frog_y = frog_y_start;
 //Single point of truth for styling
+//
 color = "rgb(0, 255, 0)";
 sprites = "assets/frogger_sprites.png";
+deadSprite = "assets/dead_frog.png";
 font = "bold 20px sans-serif";
 
 document.onkeydown = function(key) {
        switch(key.keyCode) {
+           //move left
            case 37:
-                frog_x -= move_distance; 
+                frog_x -= move_distance_hor; 
+                if(frog_x < 0) {
+                    frog_x = 0;
+                }
                 break;
+            //move up
            case 38:
                 score += 10;
                 frog_y -= move_distance;
                 break;
+            //move right
            case 39:
-                frog_x += move_distance;
+                frog_x += move_distance_hor;
+                if(frog_x >= 375) {
+                    frog_x = 375;
+                }
                 break;  
+            //move down
            case 40:
                 frog_y += move_distance;
+                if(frog_y > frog_y_start) {
+                    frog_y = frog_y_start;
+                }
                 break;
        } 
 }
@@ -76,14 +138,20 @@ function makeTimers() {
     //redraw background every time
     backgroundID = setInterval(drawBackground, 1);
     collissionCheckID = setInterval(collisionCheck, 1);
+    winCheckID = setInterval(checkWin, 1);
+    waterCheckID = setInterval(waterCheck, 1);
     lane1 = setInterval(car1, 15);
     lane2 = setInterval(car2, 13);
     lane3 = setInterval(car3, 10);
     lane4 = setInterval(car4, 8);
     lane5 = setInterval(car5, 12);
     log1ID = setInterval(log1, 12);
-    //log2 = setInterval(log2, 8);
-    //log3 = setInterval(log3, 12);
+    log2ID = setInterval(log2, 8);
+    log3ID = setInterval(log3, 12);
+    log4ID = setInterval(log4, 15);
+    log5ID = setInterval(log5, 5);
+    log6ID = setInterval(log6, 10);
+    log7ID = setInterval(log7, 10);
     tid = setInterval(play, 1000);
 }
 
@@ -93,21 +161,28 @@ function start_game() {
     img = new Image();
     img.onload = makeTimers();
     img.src = sprites;
+    deadImg = new Image();
+    deadImg.src = deadSprite;
 }
 
 function play() {
     run++;
     time--;
     drawTime();
-    console.log('in play');
-   
 
     if(lives == 0){
         gameOver = true;
     }
 
+    if(win1Draw && win2Draw && win3Draw && win4Draw && win5Draw) {
+        score += 1000;
+        gameOver = true;
+    }
+
     if(time == 0) {
+        killIt();
         time = 60;
+        
     }
 
     if(gameOver) {
@@ -130,6 +205,7 @@ function drawBackground() {
     drawLevels(10);
     drawScore();
     drawHighScore(highScore);
+    drawWinners();
 
     drawFrog();
 }
@@ -151,7 +227,7 @@ function drawText() {
 
     //reset font each time, in case it changes
     ctx.font = font;
-    ctx.fillText("Time:", 280, 550);
+    ctx.fillText("Time:", 300, 550);
     ctx.fillText("Level ", 100, 521);
     ctx.fillText("Score: ", 175, 550);
     ctx.fillText("Highscore: ", 0, 550);
@@ -176,10 +252,8 @@ function drawHighScore(num) {
 }
 
 function drawTime() {
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(340, 530, 30, 20);
     ctx.fillStyle = color;
-    ctx.fillText(time, 340, 550);
+    ctx.fillText(time, 360, 550);
 }
 
 function drawScore() {
@@ -323,6 +397,49 @@ function drawWaterItems() {
             log1_b, log1_Y, log1Arr[2], log1Arr[3]);   
     ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
             log1_c, log1_Y, log1Arr[2], log1Arr[3]);   
+    
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log2_a, log2_Y, log1Arr[2], log1Arr[3]);   
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log2_b, log2_Y, log1Arr[2], log1Arr[3]);   
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log2_c, log2_Y, log1Arr[2], log1Arr[3]);   
+    
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log3_a, log3_Y, log1Arr[2], log1Arr[3]);   
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log3_b, log3_Y, log1Arr[2], log1Arr[3]);   
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log3_c, log3_Y, log1Arr[2], log1Arr[3]);   
+    
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log4_a, log4_Y, log1Arr[2], log1Arr[3]);   
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log4_b, log4_Y, log1Arr[2], log1Arr[3]);   
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log4_c, log4_Y, log1Arr[2], log1Arr[3]);   
+    
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log5_a, log5_Y, log1Arr[2], log1Arr[3]);   
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log5_b, log5_Y, log1Arr[2], log1Arr[3]);   
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log5_c, log5_Y, log1Arr[2], log1Arr[3]);   
+    
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log6_a, log6_Y, log1Arr[2], log1Arr[3]);   
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log6_b, log6_Y, log1Arr[2], log1Arr[3]);   
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log6_c, log6_Y, log1Arr[2], log1Arr[3]);   
+    
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log7_a, log7_Y, log1Arr[2], log1Arr[3]);   
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log7_b, log7_Y, log1Arr[2], log1Arr[3]);   
+    ctx.drawImage(img, log1Arr[0], log1Arr[1], log1Arr[2], log1Arr[3], 
+            log7_c, log7_Y, log1Arr[2], log1Arr[3]);   
+    
 }
 
 function log1() {
@@ -338,42 +455,341 @@ function log1() {
     log1_a++;
     log1_b++;
     log1_c++;
+    if(onLog1 == true) {
+        frog_x++;
+    }
+}
+
+function log2() {
+    if(log2_a < -400) {
+        log2_a = 420;
+    }
+    if(log2_b < -400) {
+        log2_b = 420;
+    }
+    if(log2_c < -400) {
+        log2_c = 420;
+    }
+    log2_a--;
+    log2_b--;
+    log2_c--;
+    if(onLog2 == true) {
+        frog_x--;
+    }
+}
+
+function log3() {
+    if(log3_a > 400) {
+        log3_a = -200;
+    }
+    if(log3_b > 400) {
+        log3_b = -200;
+    }
+    if(log3_c > 400) {
+        log3_c = -200;
+    }
+    log3_a++;
+    log3_b++;
+    log3_c++;
+    if(onLog3 == true) {
+        frog_x++;
+    }
+}
+
+function log4() {
+    if(log4_a > 400) {
+        log4_a = -200;
+    }
+    if(log4_b > 400) {
+        log4_b = -200;
+    }
+    if(log4_c > 400) {
+        log4_c = -200;
+    }
+    log4_a++;
+    log4_b++;
+    log4_c++;
+    if(onLog4 == true) {
+        frog_x++;
+    }
+}
+
+function log5() {
+    if(log5_a < -400) {
+        log5_a = 420;
+    }
+    if(log5_b < -400) {
+        log5_b = 420;
+    }
+    if(log5_c < -400) {
+        log5_c = 420;
+    }
+    log5_a--;
+    log5_b--;
+    log5_c--;
+    if(onLog5 == true) {
+        frog_x--;
+    }
+}
+
+function log6() {
+    if(log6_a > 400) {
+        log6_a = -200;
+    }
+    if(log6_b > 400) {
+        log6_b = -200;
+    }
+    if(log6_c > 400) {
+        log6_c = -200;
+    }
+    log6_a++;
+    log6_b++;
+    log6_c++;
+    if(onLog6 == true) {
+        frog_x++;
+    }
+}
+
+function log7() {
+    if(log7_a > 400) {
+        log7_a = -200;
+    }
+    if(log7_b > 400) {
+        log7_b = -200;
+    }
+    if(log7_c > 400) {
+        log7_c = -200;
+    }
+    log7_a++;
+    log7_b++;
+    log7_c++;
+    if(onLog7 == true) {
+        frog_x++;
+    }
 }
 
 function collisionCheck() {
     //Tractor
-    //if(frog_y >= car1_y && frog_y <= car1_y+24) {
     if(frog_y === car1_y) {
         if(frog_x >= car1_x && frog_x <= car1_x + 160) {
-            console.log('frog squashed by Tractor');
+            dead = true;
         }
     }
     //Truck
-    //else if(frog_y >= car2_y && frog_y <= car2_y+34) {
     else if(frog_y === car2_y) {
         if(frog_x >= car2_x && frog_x <= car2_x + 120) {
-            console.log('frog squashed by Truck');
+            dead = true;
         }
     }
     //Yellow Speeder
-    //else if(frog_y >= car3_y && frog_y <= car3_y+24) {
     else if(frog_y === car3_y) {
         if(frog_x >= car3_x && frog_x <= car3_x + 120) {
-            console.log('frog squashed by Yellow Speeder');
+            dead = true;
         }
     }
     //Purple CAr
-    //else if(frog_y >= car4_y && frog_y <= car4_y+34) {
     else if(frog_y === car4_y) {
         if(frog_x >= car4_x && frog_x <= car4_x + 120) {
-            console.log('frog squashed by Purple Car');
+            dead = true;
         }
     }
     //White Speeder
-    //else if(frog_y >= car5_y && frog_y <= car5_y+24) {
     else if(frog_y === car5_y) {
         if(frog_x >= car5_x && frog_x <= car5_x + 160) {
-            console.log('frog squashed by White SPeeder');
+            dead = true;
         }
     }
+
+    if(dead) {
+        dead = false;
+        killIt();
+    }
 }
+
+function waterCheck() {
+    if(frog_y >= 100 && frog_y <= 250) {
+        if(frog_x <= 0 || frog_x >= 399) {
+            killIt();
+        }
+
+        if(frog_y == log1_Y) {
+            if(frog_x >= log1_a && frog_x <= log1_a + 105
+                || frog_x >= log1_b && frog_x <= log1_b + 105
+                || frog_x >= log1_c && frog_x <= log1_c + 105 ){
+                
+                onLog1 = true; 
+            }
+        } else {
+            onLog1 = false;
+        }
+        if (frog_y == log2_Y) {
+            if(frog_x >= log2_a && frog_x <= log2_a + 105
+                || frog_x >= log2_b && frog_x <= log2_b + 105
+                || frog_x >= log2_c && frog_x <= log2_c + 105) {
+                
+                onLog2 = true;            
+            } else {
+                onLog2 = false;
+            }
+        } else {
+            onLog2 = false;
+        }
+        if (frog_y == log3_Y) {
+            if(frog_x >= log3_a && frog_x <= log3_a + 105
+                || frog_x >= log3_b && frog_x <= log3_b + 105
+                || frog_x >= log3_c && frog_x <= log3_c + 105) {
+                
+                onLog3 = true;            
+            } else {
+                onLog3 = false;
+            }
+        } else {
+            onLog3 = false;
+        }
+        
+        if (frog_y == log4_Y) {
+            if(frog_x >= log4_a && frog_x <= log4_a + 105
+                || frog_x >= log4_b && frog_x <= log4_b + 105
+                || frog_x >= log4_c && frog_x <= log4_c + 105) {
+                
+                onLog4 = true;            
+            } else {
+                onLog4 = false;
+            }
+        } else {
+            onLog4 = false;
+        }
+        
+        if (frog_y == log5_Y) {
+            if(frog_x >= log5_a && frog_x <= log5_a + 105
+                || frog_x >= log5_b && frog_x <= log5_b + 105
+                || frog_x >= log5_c && frog_x <= log5_c + 105) {
+                
+                onLog5 = true;            
+            } else {
+                onLog5 = false;
+            }
+        } else {
+            onLog5 = false;
+        }
+        
+        if (frog_y == log6_Y) {
+            if(frog_x >= log6_a && frog_x <= log6_a + 105
+                || frog_x >= log6_b && frog_x <= log6_b + 105
+                || frog_x >= log6_c && frog_x <= log6_c + 105) {
+                
+                onLog6 = true;            
+            } else {
+                onLog6 = false;
+            }
+        } else {
+            onLog6 = false;
+        }
+
+        if (frog_y == log7_Y) {
+            if(frog_x >= log7_a && frog_x <= log7_a + 105
+                || frog_x >= log7_b && frog_x <= log7_b + 105
+                || frog_x >= log7_c && frog_x <= log7_c + 105) {
+                
+                onLog7 = true;            
+            } else {
+                onLog7 = false;
+            }
+        } else {
+            onLog7 = false;
+        }
+
+        if(!onLog1 && !onLog2 && !onLog3 && !onLog4 
+                && !onLog5 && !onLog6 && !onLog7) {
+            killIt();
+        }
+    } else {
+        onLog1 = false;
+        onLog2 = false;
+        onLog3 = false;
+        onLog4 = false;
+        onLog5 = false;
+        onLog6 = false;
+        onLog7 = false;
+    }
+}
+
+//16, 96, 176, 276, 356
+function checkWin() {
+    if(frog_y == 75) {
+        if(frog_x >= 15 && frog_x <= 35) {
+            win1Draw = true;
+            score += 50;
+            score += (10 * time);
+        } else if (frog_x >= 90 && frog_x <= 115) {
+            win2Draw = true;
+            score += 50;
+            score += (10 * time);
+        } else if (frog_x >= 170 && frog_x <= 208) {
+            win3Draw = true;
+            score += 50;
+            score += (10 * time);
+        } else if (frog_x >= 259 && frog_x <= 294) {
+            win4Draw = true;
+            score += 50;
+            score += (10 * time);
+        } else if (frog_x >= 346 && frog_x <= 364) {
+            win5Draw = true;
+            score += 50;
+            score += (10 * time);
+        } else {
+            killIt();
+        }
+
+        frog_x = frog_x_start;
+        frog_y = frog_y_start;
+        time = 60;
+    } 
+}
+
+function drawWinners() {
+    if (win1Draw) {
+        ctx.drawImage(img, frog[0], frog[1], frog[2], frog[3], 
+                16, 75, frog[2], frog[3]);
+    }
+    if (win2Draw) {
+        ctx.drawImage(img, frog[0], frog[1], frog[2], frog[3], 
+                96, 75, frog[2], frog[3]);
+    }
+    if (win3Draw) {
+        ctx.drawImage(img, frog[0], frog[1], frog[2], frog[3], 
+                176, 75, frog[2], frog[3]);
+    }
+    if (win4Draw) {
+        ctx.drawImage(img, frog[0], frog[1], frog[2], frog[3], 
+                276, 75, frog[2], frog[3]);
+    }
+    if (win5Draw) {
+        ctx.drawImage(img, frog[0], frog[1], frog[2], frog[3], 
+                356, 75, frog[2], frog[3]);
+    }
+}
+
+function killIt() {
+    lives--;
+    
+    dead_x = frog_x;
+    dead_y = frog_y;
+
+    deadID = setInterval(function() {
+        ctx.drawImage(deadImg, dead_x, dead_y);
+    }, 1);
+
+    stopDead = setTimeout(function() {
+        clearInterval(deadID);
+    }, 500);
+
+    frog_x = frog_x_start;
+    frog_y = frog_y_start;
+    if(lives == 0) {
+        //draw frog off the screen
+        frog_x = 400;
+        frog_y = 1000; 
+    }
+}
+
