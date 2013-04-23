@@ -1,0 +1,83 @@
+commit fd8ebc70c0e7e627f4da04dc01a5506ea666aed7
+Author: = <tyler@tylerlubeck.com>
+Date:   Thu Apr 18 21:01:23 2013 -0700
+
+    filled in README
+
+commit 369305333f1c83721255e94acff72fdca8bba773
+Author: = <tyler@tylerlubeck.com>
+Date:   Thu Apr 18 21:00:43 2013 -0700
+
+    everything works
+
+commit d13cac0ba713944eb4d86d22da0a02422081149b
+Author: = <tyler@tylerlubeck.com>
+Date:   Thu Apr 18 15:41:17 2013 -0700
+
+    change string
+
+commit 8426b47a8b0fdfa4cd9b1924deecbaff2c6f8939
+Author: Tyler Lubeck <tyler@ubuntu.(none)>
+Date:   Thu Apr 18 15:38:19 2013 -0700
+
+    mostly working
+
+commit 638d41bbc95886104168d8808cd8cf04730c1340
+Author: Tyler Lubeck <tyler@tylerlubeck.com>
+Date:   Sun Apr 14 22:52:49 2013 -0400
+
+    fixed typo
+
+commit c8351c5dfbcff26ecd5276c584fcd987c207851c
+Author: Tyler Lubeck <tyler@tylerlubeck.com>
+Date:   Sun Apr 14 22:38:34 2013 -0400
+
+    limit to 10 and sort
+
+commit 8b815ff095e675cdf4d47391bc666ca730c3f364
+Author: Tyler Lubeck <tyler@tylerlubeck.com>
+Date:   Sun Mar 31 21:18:45 2013 -0400
+
+    added created_at field
+
+commit 986800de3830966ffe9d97cc3875558e2c4acc35
+Author: Tyler Lubeck <tyler@tylerlubeck.com>
+Date:   Sun Mar 31 20:46:09 2013 -0400
+
+    adding limit to results
+
+commit 85cb70bc29fe0182a4595306049359542fd3c1d8
+Author: Tyler Lubeck <tyler@tylerlubeck.com>
+Date:   Sun Mar 31 20:19:09 2013 -0400
+
+    database access working
+
+commit 868fc3bc7bf501d08944cfa4d80ca4ef1d425432
+Author: Tyler Lubeck <tyler@tylerlubeck.com>
+Date:   Sun Mar 31 18:12:24 2013 -0400
+
+    print... again
+
+commit 7739c30622eace2a44772434406dbd94104ddc73
+Author: Tyler Lubeck <tyler@tylerlubeck.com>
+Date:   Sun Mar 31 18:10:09 2013 -0400
+
+    print...
+
+commit 1d6568c0a9dc223926d74f163408d372a20e6e6c
+Author: Tyler Lubeck <tyler@tylerlubeck.com>
+Date:   Sun Mar 31 18:03:18 2013 -0400
+
+    trying to add in a DB
+
+commit 341d9a752f00ab239b3196d2d28909d08999dd26
+Author: Tyler Lubeck <tyler@tylerlubeck.com>
+Date:   Sun Mar 31 17:39:40 2013 -0400
+
+    starting to understand the get/post and request/response parameters
+
+commit cd98e448809d0341e74918e1680b94070d820b2b
+Author: Tyler Lubeck <tyler@tylerlubeck.com>
+Date:   Tue Mar 26 12:18:37 2013 -0400
+
+    init
