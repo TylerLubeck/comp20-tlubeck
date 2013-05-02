@@ -5,7 +5,61 @@
 <title>Assignment 6: Security Testing</title>
 <head>
 <body>
+<h2>Introduction</h2>
+    <div id="intro">
+        I have been asked to assess a ScoreCenter web API created by a fellow student. It provides online storage for HTML5 games (and other web-accessing games) to store highscores of their users.
+    </div>
 
+<h2> Methodology</h2>
+    <div id="method">
+        My plan of attack was to first look for any way to do script injections. I also wanted to know if I could fill the database with information, thus rendering it useless for others. I was able to succeed on both fronts.
+
+        I found it easier to use my own test scripts, largely written in python, than to use pre-established tools in order to attempt to break the security of the application.
+    </div>    
+
+<h2> Abstract</h2>
+    <div id="abstract">
+        I found this site to be relatively secure. Considering what I've heard about other sites, this site did very well. I only found three problems, and they are all simple to fix. </br>
+
+        The first one that I found involved scipt injections. This means that an undesirable individual could potentially submit code to the application that is run on the user's browser. </br>
+
+        The second finding involves the application storing too much information. Because of the way the application gets information from the requests, an attacker can store extra values in the database</br>
+
+        The last finding involves storing files. The application does not prevent an attacker from storing large files. Because of this, it is remarkably simple for an undesirable individual to fill the database the application uses, thus rendering it useless for everyone
+    </div>
+
+<h2> Issues Found </h2>
+<ul>
+<li>
+    Script Injection
+    <ol>
+        <li> <h4>Issue</h4> Script Injection to the database </li>
+        <li> <h4>Page</h4> The injected script will be run on the username and home pages. The script injection takes place on the submit.json page. </li>
+        <li> <h4>Severity</h4> HIGH. Because these scripts will be run no matter what, an attacker can redirect a user or modify their localStorage</li>
+        <li><h4>Description</h4> I found this issue very quickly. I had a hunch that this may be a possible issue, so I tried injecting the script immediately using CURL. When the alert box showed up on the home page I knew I had succeeded.</li>
+        <li><h4>Resolution</h4>: This can be resolved by HTML escaping all input variables.</li>
+    </ol>
+</li>
+<li>
+    Too much data
+    <ol>
+        <li><h4>Issue</h4> POST parameters are stored as a whole and not individually</li>
+        <li><h4>Page</h4> All POST pages</li>
+        <li><h4>Severity</h4> LOW. While this is not necessarily a security flaw, it does allow the attacker to use the database for whatever data they want. </li>
+        <li><h4>Description</h4>I found this problem by analyzing the code. The POST body is stored as a whole, rather than just individual parameters. </li>
+        <li><h4>Resolution</h4> This problem can be resolved by using <code>request.body.parameter</code> rather than storing the entire <code>request.body</code></li>
+    </ol>
+</li>
+<li>
+    File Uploading
+    <ol>
+    <li><h4>Issue</h4> The database allows for uploading files</li>
+    <li><h4>Page</h4> All POST pages</li>
+    <li><h4>Severity</h4> MEDIUM. This is not a security flaw in that it doesn't allow personal data to be used. It does, however, mean that an attacker can easily render the entire application useless.</li>
+    <li><h4>Description</h4>Using CURL, I was able to upload entire 200mb files to the database. This means that I could easily fill the trial database used with garbage data and render it useless</li>
+    <li><h4>Resolution</h4>This can be easily resolved using the following code: <code>app.use(express.limit('1mb'));</code>, and specifying a file size that suits the application. Another, more difficult, option would be to require user verification and giving each user a quota.</code></li>
+    </ol>
+</ul>
 </body>
 
 </html>
